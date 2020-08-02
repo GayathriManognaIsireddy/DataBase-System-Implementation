@@ -6,8 +6,8 @@ ifdef linux
 tag = -n
 endif
 
-a4-1.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o y.tab.o lex.yy.o test.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o
-	$(CC) -o a4-1.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o y.tab.o lex.yy.o test.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o -lfl -lpthread
+a4-1.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o
+	$(CC) -o a4-1.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o -lfl -lpthread
 
 a3test.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o a3test.o DBClassifier.o HeapDBFile.o SortedDBFile.o
 	$(CC) -o a3test.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o a3test.o DBClassifier.o HeapDBFile.o SortedDBFile.o -lfl -lpthread
@@ -24,11 +24,26 @@ a1test.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Pi
 gTesta4.out: gTesta4.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o y.tab.o lex.yy.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o
 	$(CC) -o gTesta4.out gTesta4.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o y.tab.o lex.yy.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o -lfl -lgtest -lpthread
 
+a42.out:   Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o mainQueryPlan.o y.tab.o lex.yy.o main.o
+	$(CC) -o a42.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o mainQueryPlan.o y.tab.o lex.yy.o main.o -lfl -lpthread
+
+main.out:   Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o mainQueryPlan.o y.tab.o lex.yy.o main.o
+	$(CC) -o main.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o mainQueryPlan.o y.tab.o lex.yy.o main.o -lfl -lpthread
+
+gTest42.out: gTest42.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o mainQueryPlan.o y.tab.o lex.yy.o
+	$(CC) -o gTest42.out gTest42.o Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o Statistics.o DBClassifier.o HeapDBFile.o SortedDBFile.o BigQ.o Pipe.o RelOp.o Function.o mainQueryPlan.o y.tab.o lex.yy.o -lfl -lgtest -lpthread
+	
+main.o : main.cc
+	$(CC) -g -c main.cc
+
 test.o: test.cc
 	$(CC) -g -c test.cc
 
 gTesta4.o: gTesta4.cc
 	$(CC) -g -c gTesta4.cc
+
+gTest42.o: gTest42.cc
+	$(CC) -g -c gTest42.cc
 
 a2test.o: a2test.cc
 	$(CC) -g -c a2test.cc
@@ -80,10 +95,13 @@ HeapDBFile.o: HeapDBFile.cc
 
 SortedDBFile.o: SortedDBFile.cc
 	$(CC) -g -c SortedDBFile.cc
+
+mainQueryPlan.o: mainQueryPlan.cc
+	$(CC) -g -c mainQueryPlan.cc
 	
 y.tab.o: Parser.y
 	yacc -d Parser.y
-	#sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
+	sed $(tag) y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c y.tab.c
 
 yyfunc.tab.o: ParserFunc.y

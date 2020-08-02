@@ -1,0 +1,382 @@
+TC1
+Enter the Query followed by Ctrl + D:
+Number of selects: 1
+Number of joins: 0
+n.n_nationkey
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 1
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+ ****************** 
+ ****************** 
+SELECT PIPE OPERATION
+INPUT PIPE 1
+OUTPUT PIPE 2
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+
+CNF: 
+(n.n_name=UNITED STATES)
+ ****************** 
+ ****************** 
+PROJECT
+INPUT PIPE 2
+OUTPUT PIPE 3
+OUTPUT SCHEMA: 
+NumAtts =     1
+  0:     0 Int
+	Att n.n_nationkey: INT
+ ****************** 
+***************************************************************************************************************************
+TC2
+Enter the Query followed by Ctrl + D:
+Number of selects: 1
+Number of joins: 1
+n.n_name
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 2
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+ ****************** 
+ ****************** 
+SELECT PIPE OPERATION
+INPUT PIPE 2
+OUTPUT PIPE 3
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+
+CNF: 
+(n.n_nationkey>5)
+ ****************** 
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 1
+OUTPUT SCHEMA: 
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+ ****************** 
+ ****************** 
+JOIN
+LEFT INPUT PIPE 3
+RIGHT INPUT PIPE 1
+OUTPUT PIPE 4
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+
+CNF: 
+(n.n_regionkey=r.r_regionkey)
+
+ ****************** 
+ ****************** 
+PROJECT
+INPUT PIPE 4
+OUTPUT PIPE 5
+OUTPUT SCHEMA: 
+NumAtts =     1
+  0:     1 String
+	Att n.n_name: STRING
+ ****************** 
+***************************************************************************************************************************
+TC3
+Enter the Query followed by Ctrl + D:
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 2
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+ ****************** 
+ ****************** 
+SELECT PIPE OPERATION
+INPUT PIPE 2
+OUTPUT PIPE 3
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+
+CNF: 
+(n.n_name=UNITED STATES)
+ ****************** 
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 1
+OUTPUT SCHEMA: 
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+ ****************** 
+ ****************** 
+JOIN
+LEFT INPUT PIPE 3
+RIGHT INPUT PIPE 1
+OUTPUT PIPE 4
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+
+CNF: 
+(n.n_regionkey=r.r_regionkey)
+
+ ****************** 
+ ****************** 
+SUM
+LEFT INPUT PIPE 4
+OUTPUT PIPE 5
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+
+FUNCTION: 
+ ****************** 
+***************************************************************************************************************************
+TC4
+Enter the Query followed by Ctrl + D:
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 2
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+ ****************** 
+ ****************** 
+SELECT PIPE OPERATION
+INPUT PIPE 2
+OUTPUT PIPE 3
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+
+CNF: 
+(n.n_name=UNITED STATES)
+ ****************** 
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 1
+OUTPUT SCHEMA: 
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+ ****************** 
+ ****************** 
+JOIN
+LEFT INPUT PIPE 3
+RIGHT INPUT PIPE 1
+OUTPUT PIPE 4
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+
+CNF: 
+(n.n_regionkey=r.r_regionkey)
+
+ ****************** 
+ ****************** 
+GROUPBY
+LEFT INPUT PIPE 4
+OUTPUT PIPE 5
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+
+GROUPING ON 
+
+FUNCTION 
+ ****************** 
+***************************************************************************************************************************
+TC5
+Enter the Query followed by Ctrl + D:
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 3
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+ ****************** 
+ ****************** 
+SELECT PIPE OPERATION
+INPUT PIPE 3
+OUTPUT PIPE 4
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+
+CNF: 
+(n.n_nationkey>10)
+ ****************** 
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 2
+OUTPUT SCHEMA: 
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+ ****************** 
+ ****************** 
+JOIN
+LEFT INPUT PIPE 4
+RIGHT INPUT PIPE 2
+OUTPUT PIPE 5
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+
+CNF: 
+(n.n_regionkey=r.r_regionkey)
+
+ ****************** 
+ ****************** 
+SELECT FILE OPERATION
+INPUT FILE 0
+OUTPUT FILE 1
+OUTPUT SCHEMA: 
+	Att c.c_custkey: INT
+	Att c.c_name: STRING
+	Att c.c_address: STRING
+	Att c.c_nationkey: INT
+	Att c.c_phone: STRING
+	Att c.c_acctbal: DOUBLE
+	Att c.c_mktsegment: STRING
+	Att c.c_comment: STRING
+ ****************** 
+ ****************** 
+JOIN
+LEFT INPUT PIPE 5
+RIGHT INPUT PIPE 1
+OUTPUT PIPE 6
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+	Att c.c_custkey: INT
+	Att c.c_name: STRING
+	Att c.c_address: STRING
+	Att c.c_nationkey: INT
+	Att c.c_phone: STRING
+	Att c.c_acctbal: DOUBLE
+	Att c.c_mktsegment: STRING
+	Att c.c_comment: STRING
+
+CNF: 
+(n.n_nationkey=c.c_nationkey)
+
+ ****************** 
+ ****************** 
+DISTINCT
+LEFT INPUT PIPE 6
+OUTPUT PIPE 7
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+	Att c.c_custkey: INT
+	Att c.c_name: STRING
+	Att c.c_address: STRING
+	Att c.c_nationkey: INT
+	Att c.c_phone: STRING
+	Att c.c_acctbal: DOUBLE
+	Att c.c_mktsegment: STRING
+	Att c.c_comment: STRING
+
+FUNCTION: 
+ ****************** 
+ ****************** 
+GROUPBY
+LEFT INPUT PIPE 7
+OUTPUT PIPE 8
+OUTPUT SCHEMA: 
+	Att n.n_nationkey: INT
+	Att n.n_name: STRING
+	Att n.n_regionkey: INT
+	Att n.n_comment: STRING
+	Att r.r_regionkey: INT
+	Att r.r_name: STRING
+	Att r.r_comment: STRING
+	Att c.c_custkey: INT
+	Att c.c_name: STRING
+	Att c.c_address: STRING
+	Att c.c_nationkey: INT
+	Att c.c_phone: STRING
+	Att c.c_acctbal: DOUBLE
+	Att c.c_mktsegment: STRING
+	Att c.c_comment: STRING
+
+GROUPING ON 
+
+FUNCTION 
+ ****************** 
+***************************************************************************************************************************

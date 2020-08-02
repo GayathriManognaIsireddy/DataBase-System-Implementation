@@ -155,6 +155,32 @@ Schema :: Schema (char *fName, char *relName) {
 	fclose (foo);
 }
 
+void Schema::updateName(string alias)
+{
+	for(int i=0; i < numAtts; i++)
+	{
+		string old(myAtts[i].name);
+		free(myAtts[i].name);
+		string update(alias + "." + old);
+		myAtts[i].name = strdup(update.c_str());
+	}
+}
+
+void Schema::Print()
+{
+	for(int i=0; i < numAtts; i++)
+	{
+		cout << "\t" << "Att " << myAtts[i].name<<": ";
+		if(myAtts[i].myType == 0)
+			cout << "INT" << endl;
+		else if(myAtts[i].myType == 1)
+			cout << "DOUBLE" << endl;
+		else 
+			cout << "STRING" << endl;
+	}
+
+}
+
 Schema :: ~Schema () {
 	delete [] myAtts;
 	myAtts = 0;

@@ -9,6 +9,8 @@
 #include "Comparison.h"
 #include "ComparisonEngine.h"
 
+using std::string;
+
 struct att_pair {
 	char *name;
 	Type type;
@@ -56,6 +58,10 @@ public:
 	// this constructs a sort order structure that can be used to
 	// place a lexicographic ordering on the records using this type of schema
 	int GetSortOrder (OrderMaker &order);
+
+	void updateName(string alias);
+	
+	void Print();
 
 	~Schema ();
 
