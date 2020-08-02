@@ -1,11 +1,18 @@
  
 %{
 
-	#include "ParseTree.h" 
+	#include "ParseTree.h"
+	#include "DbUtil.h"
+
 	#include <stdio.h>
 	#include <string.h>
 	#include <stdlib.h>
 	#include <iostream>
+
+	#include <vector>
+
+	using std::vector;
+	using std::string;
 
 	extern "C" int yylex();
 	extern "C" int yyparse();
@@ -16,9 +23,19 @@
 	struct TableList *tables; // the list of tables and aliases in the query
 	struct AndList *boolean; // the predicate in the WHERE clause
 	struct NameList *groupingAtts; // grouping atts (NULL if no grouping)
+	struct NameList *sortAtts; // sort atts (NULL if file is heap)
 	struct NameList *attsToSelect; // the set of attributes in the SELECT (NULL if no such atts)
 	int distinctAtts; // 1 if there is a DISTINCT in a non-aggregate query 
 	int distinctFunc;  // 1 if there is a DISTINCT in an aggregate query
+
+	struct InOutPipe *io;
+
+	string createTableName;
+	string createTableType;
+	vector<string> atts;
+	vector<string> attTypes;
+
+	int queryType;
 
 %}
 
@@ -34,6 +51,10 @@
 	struct NameList *myNames;
 	char *actualChars;
 	char whichOne;
+
+	struct InOutPipe *io;
+	char *filePath;
+
 }
 
 %token <actualChars> Name
@@ -50,6 +71,21 @@
 %token AS
 %token AND
 %token OR
+%token CREATE
+%token TABLE
+%token <actualChars> HEAP
+%token <actualChars> SORTED
+%token INSERT
+%token INTO
+%token DROP
+%token SET
+%token OUTPUT
+%token STDOUT
+%token NONE
+%token ON
+%token QUIT
+%token <actualChars> PATH
+%token <actualChars> ATT_TYPE
 
 %type <myOrList> OrList
 %type <myAndList> AndList
@@ -61,6 +97,8 @@
 %type <myTables> Tables
 %type <myBoolOperand> Literal
 %type <myNames> Atts
+
+%type <io> OutputType
 
 %start SQL
 
@@ -76,6 +114,7 @@
 
 SQL: SELECT WhatIWant FROM Tables WHERE AndList
 {
+        queryType = QUERY_SELECT;
 	tables = $4;
 	boolean = $6;	
 	groupingAtts = NULL;
@@ -83,10 +122,71 @@ SQL: SELECT WhatIWant FROM Tables WHERE AndList
 
 | SELECT WhatIWant FROM Tables WHERE AndList GROUP BY Atts
 {
+        queryType = QUERY_SELECT;
 	tables = $4;
 	boolean = $6;	
 	groupingAtts = $9;
-};
+}
+
+| DROP TABLE Name
+{
+
+        queryType = QUERY_DROP;
+	tables = (struct TableList *) malloc (sizeof (struct TableList));
+
+	tables->tableName = $3;
+	tables->aliasAs = "";
+	tables->next = NULL;
+
+}
+
+| INSERT Name INTO Name
+{
+
+        queryType = QUERY_INSERT;
+	io = (struct InOutPipe *) malloc (sizeof (struct InOutPipe));
+
+	io->type = PIPE_FILE;
+	io->file = $2;
+	io->src = $4;
+
+}
+
+| SET OUTPUT OutputType
+{
+
+        queryType = QUERY_SET;
+	io = $3;
+
+}
+
+| CREATE TABLE Name '(' CreateTableAttList  ')' AS HEAP
+{
+
+        queryType = QUERY_CREATE;
+
+	createTableName = $3;
+	createTableType = $8;
+
+}
+| CREATE TABLE Name '(' CreateTableAttList  ')' AS SORTED ON Atts
+{
+
+        queryType = QUERY_CREATE;
+
+	createTableName = $3;
+	createTableType = $8;
+	sortAtts = $10;
+
+}
+
+| QUIT
+{
+
+        queryType = QUERY_QUIT;
+
+}
+;
 
 WhatIWant: Function ',' Atts 
 {
@@ -360,5 +460,77 @@ Float
 }
 ;
 
-%%
+CreateTableAttList: CreateTableAttList ',' Name ATT_TYPE
+{
 
+      atts.push_back($3);
+      attTypes.push_back($4);
+
+}
+
+| Name ATT_TYPE
+{
+
+      atts.push_back($1);
+      attTypes.push_back($2);
+
+}
+;
+/*
+AttType: "STRING"
+{
+
+      $$ = "STRING";
+
+}
+
+| "INTEGER"
+{
+
+      $$ = "INTEGER";
+
+}
+
+| "DOUBLE"
+{
+
+      $$ = "DOUBLE";
+
+}
+;
+*/
+OutputType: STDOUT
+{
+
+	$$ = (struct InOutPipe *) malloc (sizeof (struct InOutPipe));
+
+	$$->type = PIPE_STDOUT;
+	$$->file = "";
+	$$->src = "";
+
+}
+
+| NONE
+{
+
+	$$ = (struct InOutPipe *) malloc (sizeof (struct InOutPipe));
+
+	$$->type = PIPE_NONE;
+	$$->file = "";
+	$$->src = "";
+
+}
+
+| PATH
+{
+
+	$$ = (struct InOutPipe *) malloc (sizeof (struct InOutPipe));
+
+	$$->type = PIPE_FILE;
+	$$->file = $1;
+	$$->src = "";
+
+}
+;
+
+%%

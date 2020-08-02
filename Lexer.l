@@ -1,3 +1,4 @@
+   
 /***********************************************************************
  * SECTION 1
  ***********************************************************************/
@@ -55,6 +56,36 @@ void yyerror(char*s);
 
 "AS"			return(AS);
 
+"CREATE"		return(CREATE);
+
+"TABLE"			return(TABLE);
+
+"HEAP"			return(HEAP);
+
+"SORTED"			return(SORTED);
+
+"ON"			return(ON);
+
+"INSERT"		return(INSERT);
+
+"INTO"			return(INTO);
+
+"DROP"		        return(DROP);
+
+"SET"		        return(SET);
+
+"OUTPUT"		return(OUTPUT);
+
+"STDOUT"		return(STDOUT);
+
+"NONE"	 	        return(NONE);
+
+"STRING"|"INTEGER"|"DOUBLE" { yylval.actualChars = strdup(yytext);
+  			       return(ATT_TYPE);
+		            }
+
+"QUIT"	 	        return(QUIT);
+
 "("			return('(');
 
 "<"                     return('<');
@@ -85,11 +116,12 @@ void yyerror(char*s);
 
 [A-Za-z][A-Za-z0-9_-]* {yylval.actualChars = strdup(yytext);
   			return(Name);
-			}     
+			}
 
 [A-Za-z][A-Za-z0-9_-]*\.[A-Za-z][A-Za-z0-9_-]* {yylval.actualChars = strdup(yytext);
   			return(Name);
 			}     
+
 
 \'[^'\n]*\'            {/* take care of ' in a string */
                         if (yytext[yyleng - 2] == '\\') {
@@ -116,5 +148,3 @@ void yyerror(char *s) {
 int yywrap(void){
   return 1;
 }
-
-

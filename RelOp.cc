@@ -1,6 +1,7 @@
 #include "RelOp.h"
 
 void SelectFile::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
+	cout<< &inFile<< endl;
 	this->inFile = &inFile;
   	this->outPipe = &outPipe;
   	this->selOp = &selOp;
@@ -29,12 +30,35 @@ void * SelectFile::runHelper(void *op)
 //Record from file to out pipe
 void SelectFile::selectFileFunction()
 {
+	int count = 0;
+	//Schema sch = Schema("catalog", "nation");
 	Record *record = new Record;
-  	while(inFile->GetNext(*record, *selOp, *literal)){
-		Record *toPipe = new Record;
-		toPipe->Consume(record);
-      	outPipe->Insert(toPipe);
-  	}
+	if(!selOp){
+		//cout<< "In not selOp ============"<< endl;
+		while(inFile->GetNext(*record)){
+			count++;
+			Record *toPipe = new Record;
+			toPipe->Consume(record);
+			//toPipe->Print(&sch);
+      		outPipe->Insert(toPipe);
+  		}
+	}
+	else{
+		//cout<< "In selOp ============"<< endl;
+		while(inFile->GetNext(*record, *selOp, *literal)){
+			count++;
+			Record *toPipe = new Record;
+			toPipe->Consume(record);
+      		outPipe->Insert(toPipe);
+  		}
+	}
+
+	//cout << " THe count of the records is " << count << endl;
+	
+	// Record *temp;
+	// while(outPipe->Remove(temp)){
+	// 	temp->Print(&sch);
+	// }
 }
 
 
@@ -96,6 +120,7 @@ void Project::Run(Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, in
 }
 
 void Project::WaitUntilDone () { 
+	cout << "Waiting for PROJECT to complete" << endl;
 	pthread_join (workerThread, NULL);
 }
 
@@ -141,7 +166,7 @@ void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
 
 void Join::WaitUntilDone ()
 {
-	//cout << "Waiting for JOIN to complete " << endl;
+	cout << "Waiting for JOIN to complete " << endl;
     pthread_join(workerThread, NULL);
 }
 
@@ -176,8 +201,10 @@ void Join::joinBySort(OrderMaker *leftOM, OrderMaker *rightOM)
 {
     //BigQ constructor with require parameters to fetch the records to left and right pipe
     Pipe leftPipe(1000);
+	//cout << "Sorting left pipe in joint@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
 	BigQ bigL(*inPipeL, leftPipe, *leftOM, numOfPages);
     Pipe rightPipe(1000);
+	//cout << "Sorting right pipe in join@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
     BigQ bigR(*inPipeR, rightPipe, *rightOM, numOfPages);
 
     // pipe specific flags and record holders
@@ -185,6 +212,7 @@ void Join::joinBySort(OrderMaker *leftOM, OrderMaker *rightOM)
     Record *rightRecord = new Record;
     bool leftFlag = (0 == leftPipe.Remove(leftRecord));
     bool rightFlag = (0 == rightPipe.Remove(rightRecord));
+	//cout<< leftFlag<<" and "<< rightFlag<<endl;
 
 	//cout<< "left att count: "<< left->GetAttributeCount()<< "  Right att count: "<< right->GetAttributeCount()<< endl;
 

@@ -1,94 +1,104 @@
 #ifndef BIGQ_H
 #define BIGQ_H
 
+#ifdef DEBUG
+#define error(x) (std::cerr << (x) << endl)
+#define debug(x) (std::cout << (x) << endl)
+#else
+#define error(x) 
+#define debug(x)
+#endif
+
+#define GETLENGTH(totalPages) ((totalPages == 0) ? 0 : totalPages - 1)
 
 #include <pthread.h>
 #include <queue> 
 #include <iostream>
-#include "algorithm"
-#include "vector"
 #include "Pipe.h"
 #include "File.h"
 #include "Record.h"
 #include "Comparison.h"
+#include "algorithm"
+#include<bits/stdc++.h> 
+#include "vector"
 
-using namespace std;
-
-//Class for storing the pages as sets of pages as per the given run length
-class pageList{
-	public:
-		queue <Page*>pageQueue;
+//A structure to the know the current location of the record in a run
+class RecordStore
+{
+public:
+	Record *rec;
+	int pageNum;
+	int arrayIndex;
 };
 
-// Comparator class used in sorting records
-class recordCompare {
+//Comparator to sort the vector of Records
+class compare {
 	OrderMaker* orderMaker;
 
 public:
-	recordCompare(OrderMaker *order)
+	compare(OrderMaker *order)
 	{
 		orderMaker = order;
 	}
 
 	bool operator()(Record *left, Record *right) {
-		ComparisonEngine comObj;
-		if (comObj.Compare(left, right, orderMaker) < 0)
+		ComparisonEngine comp;
+		if (comp.Compare(left, right, orderMaker) < 0)
 			return true;
 		return false;
 	}
+
+	bool operator()(RecordStore left, RecordStore right)
+	{
+		ComparisonEngine comp;
+		if (comp.Compare(left.rec, right.rec, orderMaker) < 0)
+			return false;
+		return true;
+	}
+
 };
 
-// Used for storing the record and its respective page set
-class RecordClass
-{
-public:
-	Record *rec;
-	int pageSet;
-};
 
-// Comparator class used in sorting records classes
-class pairCompare{
-	OrderMaker* orderMaker;
-	public:
-		pairCompare(OrderMaker *order)
-		{
-			orderMaker = order;
-		}
-		
-		bool operator()(RecordClass left, RecordClass right)
-		{
-			ComparisonEngine comObj;
-			if (comObj.Compare(left.rec, right.rec, orderMaker) < 0)
-				return false;
-			return true;
-		}
-};
 
 class BigQ {
-	Pipe *inputPipe;
-	Pipe *outputPipe;
-	OrderMaker *sortOrder;
-	int runLength;
-	File* file;
-	char filename[50];
-public:
 
-	BigQ(Pipe &inPipe, Pipe &outPipe, OrderMaker &sortorder, int runlength);
-	BigQ();
-	BigQ (int runLength);
+public:
+	//The thread worker that handles the core functionality of BigQ
+	static void* thread_worker(void* arg);
+
+	BigQ(Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen);
 	~BigQ();
 
-	//Thread function that initiates the BigQ process once the pthread is created
-	static void* start_thread(void* arg);
+	/*
+	Write the sorted records from the vector into the file. If the records do not fit
+	into the runlen pages, them add the remaining records into the bufferPage.
+	*/
+	void writeToFile(vector<Record*> &vecOfRecords, Page *&bufferPage);
 
-	// Sorts the records read form input pipe as per the given sort order and puts them into pages of given fun_length
-	int sortRecords();
 
-	//Function for writing the remaining records present in record list to page buffer
-	void remainingRecords(vector<Record*> &recordList, Page *&workingPage, int counter);
+	/*
+	Reads the records from the input pipe, sorts the records into pages for runlen
+	and sends each run to the writeToFile to write to File instance.
+	*/
+	void sortAndWriteRuns();
 
-	// Writing the sorted record pages in to given file
-	void fileWriter(vector<Record*> &recordList, Page *&workingPage);
+
+	/*
+	Performs a K-way merge to read the sorted runs that were written by sortAndWriteRuns,
+	merge them and send them to the output Pipe.
+	*/
+	void MergeRecords();
+	
+private:
+	Pipe *inPipe;
+	Pipe *outPipe;
+	OrderMaker *sortOrder;
+	int run_length;
+	File* file;
+
+	pthread_t worker;
+	char filename[50];
+
 };
 
 #endif

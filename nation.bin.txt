@@ -1,4 +1,4 @@
 sortedFile
 8
 1
-2 Int
+0 Int

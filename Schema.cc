@@ -186,3 +186,13 @@ Schema :: ~Schema () {
 	myAtts = 0;
 }
 
+Schema :: Schema (Schema *old, vector<int> attsToKeep) {
+	numAtts = attsToKeep.size();
+	myAtts = new Attribute[numAtts];
+
+	//Iterate over atts to keep vector
+	for(unsigned i = 0; i < attsToKeep.size(); i++){
+		myAtts[i] = old->myAtts[attsToKeep[i]]; //Pull the attribute from the old schema and put it into the new schema
+	}
+}
+

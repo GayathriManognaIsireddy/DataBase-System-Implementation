@@ -86,6 +86,7 @@ int DBFile::Open (const char *f_path) {
     //cout << "It is " << metaContent << endl;
 	//Checking the meta content of the file steam
 	if (fileMetaContent == "heapFile") {
+		cout<< "this is heap file"<< endl;
 		dbClassifier = new HeapDBFile();
 	}
 	else if (fileMetaContent == "sortedFile")
@@ -135,6 +136,7 @@ int DBFile::Open (const char *f_path) {
 	}
 
 	fileStream.close();
+	cout<< "IN DBFILE f_path:"<< f_path<<endl;
 	return dbClassifier->Open(f_path);
 }
 

@@ -3,11 +3,14 @@
 #define SCHEMA_H
 
 #include <stdio.h>
+#include <vector>
 #include "Record.h"
 #include "Schema.h"
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+
+using std::vector;
 
 using std::string;
 
@@ -34,6 +37,8 @@ class Schema {
 	friend class Record;
 
 public:
+
+	Schema (Schema *old, vector<int> attsToKeep);
 
 	// gets the set of attributes, but be careful with this, since it leads
 	// to aliasing!!!
