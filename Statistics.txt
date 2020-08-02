@@ -1,0 +1,17 @@
+2
+partsupp
+800000
+1
+ps_suppkey
+10000
+supplier
+10000
+1
+s_suppkey
+10000
+RelationUnionInfo Start --
+1
+800000
+2
+partsupp
+supplier
