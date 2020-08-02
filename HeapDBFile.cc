@@ -20,6 +20,7 @@ int HeapDBFile::Create(const char *f_path, fType f_type, void *startup) {
 }
 
 void HeapDBFile::Load(Schema &f_schema, char *loadpath) {
+	cout << "----------------------------MAGIC" << endl;
 	Record curRecord;
 	// Opening the file in read mode
 	FILE *loadFile = fopen(loadpath, "r");

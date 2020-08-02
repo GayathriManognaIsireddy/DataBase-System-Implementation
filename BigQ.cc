@@ -78,15 +78,15 @@ int BigQ::sortRecords()
 	int len=file->GetLength();
 	int totalPages = len==0?0:len-1;
 	int totalRuns = ceil((float)totalPages/runLength);
-
-	cout<< "Num of runs   "<<totalRuns<<endl;
+	//cout << "The number of pages is " << totalPages << "  and the run length is " << runLength << endl;
+	//cout<< "Num of runs   "<<totalRuns<<endl;
 
 	pageList *pageBufferSet[totalRuns];
 	for(int j=0; j<totalRuns; j++){
 		pageBufferSet[j] = new pageList();
 	}
 
-	cout<< "After initializing pageBufferSet "<<totalPages<<endl;
+	//cout<< "After initializing pageBufferSet "<<totalPages<<endl;
 	for(int j=0; j<totalPages; j++){
 		Page *temp=new Page();
 		

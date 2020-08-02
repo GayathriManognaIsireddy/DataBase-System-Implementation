@@ -8,6 +8,7 @@
 
 typedef enum { heap, sorted, tree } fType;
 
+struct LocalStartUp { OrderMaker *localOrder; int runLength; };
 class DBClassifier {
 public:
 	DBClassifier();

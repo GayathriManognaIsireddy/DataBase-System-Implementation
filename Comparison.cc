@@ -117,8 +117,6 @@ void OrderMaker :: Print () {
 	}
 }
 
-
-
 int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
 
 	// initialize the size of the OrderMakers
@@ -175,7 +173,6 @@ int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
 	}
 	
 	return left.numAtts;
-
 }
 
 
@@ -615,4 +612,70 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
 	remove("hkljdfgkSDFSDF");
 }
 
+void OrderMaker::GetAttributes(int * listOfAttributes, Type * typeOfAttributes)
+{
+	for (int i = 0; i < numAtts; i++)
+	{
+		listOfAttributes[i] = this->whichAtts[i];
+		typeOfAttributes[i] = this->whichTypes[i];
+	}
+}
 
+void OrderMaker::SetAttributes(int listOfAttributes, int * attList, Type * typeOfAttributes)
+{
+	for (int i = 0; i < listOfAttributes; i++)
+	{
+		this->whichAtts[i] = attList[i];
+		this->whichTypes[i] = typeOfAttributes[i];
+	}
+
+	this->numAtts = listOfAttributes;
+}
+
+int OrderMaker::GetAttributeCount()
+{
+	return numAtts;
+}
+
+int OrderMaker::resultQuery(CNF& cnfObj, OrderMaker& sortOrder, OrderMaker& queryOrderMaker, OrderMaker& cnfOrderMaker)
+{
+	queryOrderMaker.numAtts = 0;
+	cnfOrderMaker.numAtts = 0;
+
+	for (int i = 0; i < sortOrder.numAtts; i++)
+	{
+		bool flag = true;
+		for (int j = 0; j < cnfObj.numAnds; j++)
+		{
+			int currLen = cnfObj.orLens[j];
+			Comparison& curCmp=cnfObj.orList[j][0];
+
+			if (curCmp.op==Equals && currLen == 1)
+			{
+				if (((curCmp.whichAtt1 == sortOrder.whichAtts[i]) && (curCmp.operand2 == Literal))
+						|| ((curCmp.whichAtt2 == sortOrder.whichAtts[i]) && (curCmp.operand1 == Literal)))
+				{
+					if(curCmp.operand1 == Literal)
+					{
+						cnfOrderMaker.whichAtts[cnfOrderMaker.numAtts] = curCmp.whichAtt1;
+						queryOrderMaker.whichAtts[queryOrderMaker.numAtts] = curCmp.whichAtt2;
+					}
+					else if(curCmp.operand2 == Literal){
+						queryOrderMaker.whichAtts[queryOrderMaker.numAtts] = curCmp.whichAtt1;
+						cnfOrderMaker.whichAtts[cnfOrderMaker.numAtts] = curCmp.whichAtt2;
+					}
+
+					cnfOrderMaker.whichTypes[cnfOrderMaker.numAtts++] = sortOrder.whichTypes[i];
+					queryOrderMaker.whichTypes[queryOrderMaker.numAtts++] = sortOrder.whichTypes[i];
+
+					flag = false;
+				}
+			}
+		}
+
+		if (flag)
+			break;
+	}
+	
+	return queryOrderMaker.numAtts;
+}

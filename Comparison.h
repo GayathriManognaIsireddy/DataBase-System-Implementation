@@ -14,6 +14,8 @@ class Comparison {
 	friend class ComparisonEngine;
 	friend class CNF;
 
+	friend class OrderMaker;
+
 	Target operand1;
 	int whichAtt1;
 	Target operand2;
@@ -36,6 +38,7 @@ public:
 
 
 class Schema;
+class CNF;
 
 // This structure encapsulates a sort order for records
 class OrderMaker {
@@ -50,6 +53,7 @@ class OrderMaker {
 
 public:
 	
+
 	// creates an empty OrdermMaker
 	OrderMaker();
 
@@ -59,6 +63,19 @@ public:
 
 	// print to the screen
 	void Print ();
+
+	// To fetch the attributes list and their respectvie types
+	void GetAttributes(int *listOfAttributes, Type *typeOfAttributes);
+	
+	// To set the provided attributes to the class ordermaker class level attribute array
+	void SetAttributes(int numofAtts,int *listOfAttributes, Type *typeOfAttributes);
+
+	// To fetch the numAtt value
+	int GetAttributeCount();
+
+	// Comparing the files sortorder attributes to CNF attributes and if there is a match with CNF operand equal to literal then placing the
+	// respective whichAttributes to corresponding cnforder and queryorder ordermaker objects and finally returning the queryattribute ordermaker attribute count
+	static int resultQuery(CNF& cnf, OrderMaker& sortOrder, OrderMaker& queryOrder, OrderMaker& cnfOrder);
 };
 
 class Record;
@@ -69,6 +86,7 @@ class Record;
 class CNF {
 
 	friend class ComparisonEngine;
+	friend class OrderMaker;
 
 	Comparison orList[MAX_ANDS][MAX_ORS];
 	

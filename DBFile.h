@@ -10,6 +10,7 @@
 
 #include "HeapDBFile.h"
 #include "DBClassifier.h"
+#include "SortedDBFile.h"
 
 //typedef enum {heap, sorted, tree} fType;
 
