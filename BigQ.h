@@ -12,6 +12,8 @@
 #include "Record.h"
 #include "Comparison.h"
 
+using namespace std;
+
 //Class for storing the pages as sets of pages as per the given run length
 class pageList{
 	public:
@@ -67,6 +69,8 @@ class BigQ {
 	Pipe *outputPipe;
 	OrderMaker *sortOrder;
 	int runLength;
+	File* file;
+	char filename[50];
 public:
 
 	BigQ(Pipe &inPipe, Pipe &outPipe, OrderMaker &sortorder, int runlength);
@@ -84,7 +88,7 @@ public:
 	void remainingRecords(vector<Record*> &recordList, Page *&workingPage, int counter);
 
 	// Writing the sorted record pages in to given file
-	void fileWriter(vector<Record*> &recordList, Page *&workingPage, File* file);
+	void fileWriter(vector<Record*> &recordList, Page *&workingPage);
 };
 
 #endif

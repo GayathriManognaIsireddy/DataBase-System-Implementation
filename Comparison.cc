@@ -171,7 +171,7 @@ int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
 		left.numAtts++;
 		right.numAtts++;
 	}
-	
+
 	return left.numAtts;
 }
 

@@ -71,7 +71,7 @@ int DBFile::Open (const char *f_path) {
     ifstream fileStream;
     string fileName=(char *) f_path;
 	fileName.append(".txt");
-	cout << "fileName is: " <<fileName<<endl;
+	//cout << "fileName is: " <<fileName<<endl;
 	//cout << "given string name: " << fileName << endl;
 	fileStream.open(fileName);
     //cout << "done reading file " << fileName << endl;

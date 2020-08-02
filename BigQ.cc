@@ -17,7 +17,15 @@ BigQ :: BigQ (Pipe &inPipe, Pipe &outPipe, OrderMaker &sortorder, int runlength)
 
 	pthread_t worker;
 
-	pthread_create(&worker, NULL, &start_thread, (void *) this);
+	file = new File();
+	timespec time;
+  	clock_gettime(CLOCK_REALTIME, &time);
+  	int timestamp = time.tv_nsec;
+
+  	sprintf(filename, "sortedBigQ-%d.bin", timestamp);
+  	file->Open(0, filename);
+
+	int threadNumber = pthread_create(&worker, NULL, &start_thread, (void *) this);
 }
 
 BigQ::BigQ () {
@@ -42,8 +50,8 @@ int BigQ::sortRecords()
 	Record *record = new Record;
 	int curPageCount = 0;
 
-	File* file = new File();
-	file->Open(0, "sortedBigQ");
+	// File* file = new File();
+	// file->Open(0, "sortedBigQ");
 
 	Page *workingPage = new Page;
 	int recCounter=0;
@@ -58,7 +66,7 @@ int BigQ::sortRecords()
 			if (++curPageCount >= runLength)
 			{
 				sort(recordsList.begin(), recordsList.end(), recordCompare(sortOrder));
-				fileWriter(recordsList, workingPage, file);
+				fileWriter(recordsList, workingPage);
 				curPageCount = 0;
 			}
 			workingPage->Append(record);
@@ -71,7 +79,7 @@ int BigQ::sortRecords()
 	//!recordsList.empty()&&
 	if (recordsList.size()>0) {
 		sort(recordsList.begin(), recordsList.end(), recordCompare(sortOrder));
-		fileWriter(recordsList, bufferpage, file);
+		fileWriter(recordsList, bufferpage);
 	}
 
 	priority_queue<RecordClass,vector<RecordClass>, pairCompare> pqRecords(sortOrder);
@@ -118,7 +126,7 @@ int BigQ::sortRecords()
 	}
 
 	//cout << "After pushing record to Priority queue  "<<endl;
-	cout << "Priority Queue size  "<<pqRecords.size()<<endl;
+	//cout << "Priority Queue size  "<<pqRecords.size()<<endl;
 	
 	while (!pqRecords.empty())
 	{
@@ -156,6 +164,7 @@ int BigQ::sortRecords()
 	}
 	file->Close();
 	outputPipe->ShutDown();
+	cout << "Completed writing from BigQ to outPipd" << endl;
 	return 1;
 }
 
@@ -175,7 +184,7 @@ void BigQ::remainingRecords(vector<Record*> &recordsList, Page *&workingPage, in
 	}
 }
 
-void BigQ::fileWriter(vector<Record*> &recordsList, Page *&workingPage, File* file)
+void BigQ::fileWriter(vector<Record*> &recordsList, Page *&workingPage)
 {
 	Page *curPage = new Page();
 	int curPageCount = 0;
